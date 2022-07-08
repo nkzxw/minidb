@@ -13,7 +13,6 @@ using namespace std;
 
 BlockInfo *BufferManager::GetFileBlock(string db_name, string tb_name,
                                        int file_type, int block_num) {
-
   fhandle_->IncreaseAge();
 
   FileInfo *file = fhandle_->GetFileInfo(db_name, tb_name, file_type);

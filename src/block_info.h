@@ -14,7 +14,7 @@
 class FileInfo;
 
 class BlockInfo {
-private:
+ private:
   FileInfo *file_;
   int block_num_;
   char *data_;
@@ -22,7 +22,7 @@ private:
   long age_;
   BlockInfo *next_;
 
-public:
+ public:
   BlockInfo(int num)
       : dirty_(false), next_(NULL), file_(NULL), age_(0), block_num_(num) {
     data_ = new char[4 * 1024];

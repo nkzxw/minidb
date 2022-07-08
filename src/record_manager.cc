@@ -5,6 +5,7 @@
 
 #include "record_manager.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 
@@ -50,9 +51,7 @@ void RecordManager::Insert(SQLInsert &st) {
   }
 
   if (pk_index != -1) {
-
     if (tbl->GetIndexNum() != 0) {
-
       BPlusTree tree(tbl->GetIndex(0), hdl_, cm_, db_name_);
 
       int value = tree.GetVal(tkey_values[pk_index]);
@@ -78,8 +77,8 @@ void RecordManager::Insert(SQLInsert &st) {
   }
 
   char *content;
-  int ub = tbl->first_block_num();    // used block
-  int frb = tbl->first_rubbish_num(); // first rubbish block
+  int ub = tbl->first_block_num();     // used block
+  int frb = tbl->first_rubbish_num();  // first rubbish block
   int lastub;
   int blocknum, offset;
 
@@ -191,7 +190,6 @@ void RecordManager::Insert(SQLInsert &st) {
 }
 
 void RecordManager::Select(SQLSelect &st) {
-
   Table *tbl = cm_->GetDB(db_name_)->GetTable(st.tb_name());
 
   for (int i = 0; i < tbl->GetAttributeNum(); ++i) {
@@ -243,7 +241,7 @@ void RecordManager::Select(SQLSelect &st) {
 
       block_num = bp->GetNextBlockNum();
     }
-  } else { // if has index
+  } else {  // if has index
     BPlusTree tree(tbl->GetIndex(index_idx), hdl_, cm_, db_name_);
 
     // build TKey for search
@@ -288,7 +286,6 @@ void RecordManager::Select(SQLSelect &st) {
 }
 
 void RecordManager::Delete(SQLDelete &st) {
-
   Table *tbl = cm_->GetDB(db_name_)->GetTable(st.tb_name());
 
   bool has_index = false;
@@ -346,7 +343,7 @@ void RecordManager::Delete(SQLDelete &st) {
 
       block_num = bp->GetNextBlockNum();
     }
-  } else { // if has index
+  } else {  // if has index
     BPlusTree tree(tbl->GetIndex(index_idx), hdl_, cm_, db_name_);
 
     // build TKey for search
@@ -410,7 +407,6 @@ void RecordManager::Update(SQLUpdate &st) {
 
   if (affect_index != -1) {
     if (tbl->GetIndexNum() != 0) {
-
       BPlusTree tree(tbl->GetIndex(0), hdl_, cm_, db_name_);
 
       int value = tree.GetVal(values[affect_index]);
@@ -522,7 +518,7 @@ void RecordManager::DeleteRecord(Table *tbl, int block_num, int offset) {
 
   bp->DecreaseRecordCount();
 
-  if (bp->GetRecordCount() == 0) { // add the block to rubbish block chain
+  if (bp->GetRecordCount() == 0) {  // add the block to rubbish block chain
 
     int prevnum = bp->GetPrevBlockNum();
     int nextnum = bp->GetNextBlockNum();
@@ -555,7 +551,6 @@ void RecordManager::DeleteRecord(Table *tbl, int block_num, int offset) {
 void RecordManager::UpdateRecord(Table *tbl, int block_num, int offset,
                                  std::vector<int> &indices,
                                  std::vector<TKey> &values) {
-
   BlockInfo *bp = GetBlockInfo(tbl, block_num);
 
   char *content = bp->data() + offset * tbl->record_length() + 12;
@@ -586,26 +581,26 @@ bool RecordManager::SatisfyWhere(Table *tbl, std::vector<TKey> keys,
   TKey tmp(tbl->ats()[idx].data_type(), tbl->ats()[idx].length());
   tmp.ReadValue(where.value.c_str());
   switch (where.sign_type) {
-  case SIGN_EQ:
-    return keys[idx] == tmp;
-    break;
-  case SIGN_NE:
-    return keys[idx] != tmp;
-    break;
-  case SIGN_LT:
-    return keys[idx] < tmp;
-    break;
-  case SIGN_GT:
-    return keys[idx] > tmp;
-    break;
-  case SIGN_LE:
-    return keys[idx] <= tmp;
-    break;
-  case SIGN_GE:
-    return keys[idx] >= tmp;
-    break;
-  default:
-    return false;
-    break;
+    case SIGN_EQ:
+      return keys[idx] == tmp;
+      break;
+    case SIGN_NE:
+      return keys[idx] != tmp;
+      break;
+    case SIGN_LT:
+      return keys[idx] < tmp;
+      break;
+    case SIGN_GT:
+      return keys[idx] > tmp;
+      break;
+    case SIGN_LE:
+      return keys[idx] <= tmp;
+      break;
+    case SIGN_GE:
+      return keys[idx] >= tmp;
+      break;
+    default:
+      return false;
+      break;
   }
 }

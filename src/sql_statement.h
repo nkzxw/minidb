@@ -18,12 +18,12 @@ class Attribute;
 class Index;
 
 class TKey {
-private:
+ private:
   int key_type_;
   char *key_;
   int length_;
 
-public:
+ public:
   TKey(int keytype, int length) {
     key_type_ = keytype;
     if (keytype == 2)
@@ -42,33 +42,33 @@ public:
 
   void ReadValue(const char *content) {
     switch (key_type_) {
-    case 0: {
-      int a = std::atoi(content);
-      memcpy(key_, &a, length_);
-    } break;
-    case 1: {
-      float a = std::atof(content);
-      memcpy(key_, &a, length_);
-    } break;
-    case 2: {
-      memcpy(key_, content, length_);
-    } break;
+      case 0: {
+        int a = std::atoi(content);
+        memcpy(key_, &a, length_);
+      } break;
+      case 1: {
+        float a = std::atof(content);
+        memcpy(key_, &a, length_);
+      } break;
+      case 2: {
+        memcpy(key_, content, length_);
+      } break;
     }
   }
 
   void ReadValue(std::string str) {
     switch (key_type_) {
-    case 0: {
-      int a = std::atoi(str.c_str());
-      memcpy(key_, &a, length_);
-    } break;
-    case 1: {
-      float a = std::atof(str.c_str());
-      memcpy(key_, &a, length_);
-    } break;
-    case 2: {
-      memcpy(key_, str.c_str(), length_);
-    } break;
+      case 0: {
+        int a = std::atoi(str.c_str());
+        memcpy(key_, &a, length_);
+      } break;
+      case 1: {
+        float a = std::atof(str.c_str());
+        memcpy(key_, &a, length_);
+      } break;
+      case 2: {
+        memcpy(key_, str.c_str(), length_);
+      } break;
     }
   }
 
@@ -77,35 +77,34 @@ public:
   int length() { return length_; }
 
   ~TKey() {
-    if (key_ != NULL)
-      delete[] key_;
+    if (key_ != NULL) delete[] key_;
   }
 
   friend std::ostream &operator<<(std::ostream &out, const TKey &object);
 
   bool operator<(const TKey t1) {
     switch (t1.key_type_) {
-    case 0:
-      return *(int *)key_ < *(int *)t1.key_;
-    case 1:
-      return *(float *)key_ < *(float *)t1.key_;
-    case 2:
-      return (strncmp(key_, t1.key_, length_) < 0);
-    default:
-      return false;
+      case 0:
+        return *(int *)key_ < *(int *)t1.key_;
+      case 1:
+        return *(float *)key_ < *(float *)t1.key_;
+      case 2:
+        return (strncmp(key_, t1.key_, length_) < 0);
+      default:
+        return false;
     }
   }
 
   bool operator>(const TKey t1) {
     switch (t1.key_type_) {
-    case 0:
-      return *(int *)key_ > *(int *)t1.key_;
-    case 1:
-      return *(float *)key_ > *(float *)t1.key_;
-    case 2:
-      return (strncmp(key_, t1.key_, length_) > 0);
-    default:
-      return false;
+      case 0:
+        return *(int *)key_ > *(int *)t1.key_;
+      case 1:
+        return *(float *)key_ > *(float *)t1.key_;
+      case 2:
+        return (strncmp(key_, t1.key_, length_) > 0);
+      default:
+        return false;
     }
   }
 
@@ -115,36 +114,36 @@ public:
 
   bool operator==(const TKey t1) {
     switch (t1.key_type_) {
-    case 0:
-      return *(int *)key_ == *(int *)t1.key_;
-    case 1:
-      return *(float *)key_ == *(float *)t1.key_;
-    case 2:
-      return (strncmp(key_, t1.key_, length_) == 0);
-    default:
-      return false;
+      case 0:
+        return *(int *)key_ == *(int *)t1.key_;
+      case 1:
+        return *(float *)key_ == *(float *)t1.key_;
+      case 2:
+        return (strncmp(key_, t1.key_, length_) == 0);
+      default:
+        return false;
     }
   }
 
   bool operator!=(const TKey t1) {
     switch (t1.key_type_) {
-    case 0:
-      return *(int *)key_ != *(int *)t1.key_;
-    case 1:
-      return *(float *)key_ != *(float *)t1.key_;
-    case 2:
-      return (strncmp(key_, t1.key_, length_) != 0);
-    default:
-      return false;
+      case 0:
+        return *(int *)key_ != *(int *)t1.key_;
+      case 1:
+        return *(float *)key_ != *(float *)t1.key_;
+      case 2:
+        return (strncmp(key_, t1.key_, length_) != 0);
+      default:
+        return false;
     }
   }
 };
 
 class SQL {
-protected:
+ protected:
   int sql_type_;
 
-public:
+ public:
   SQL() : sql_type_(-1) {}
   SQL(int sqltype) { sql_type_ = sqltype; }
   virtual ~SQL() {}
@@ -156,10 +155,10 @@ public:
 };
 
 class SQLCreateDatabase : public SQL {
-private:
+ private:
   std::string db_name_;
 
-public:
+ public:
   SQLCreateDatabase(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   std::string db_name() { return db_name_; }
   void set_db_name(std::string dbname) { db_name_ = dbname; }
@@ -167,10 +166,10 @@ public:
 };
 
 class SQLDropDatabase : public SQL {
-private:
+ private:
   std::string db_name_;
 
-public:
+ public:
   SQLDropDatabase(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   std::string db_name() { return db_name_; }
   void set_db_name(std::string dbname) { db_name_ = dbname; }
@@ -178,10 +177,10 @@ public:
 };
 
 class SQLDropTable : public SQL {
-private:
+ private:
   std::string tb_name_;
 
-public:
+ public:
   SQLDropTable(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   std::string tb_name() { return tb_name_; }
   void set_tb_name(std::string tbname) { tb_name_ = tbname; }
@@ -189,10 +188,10 @@ public:
 };
 
 class SQLDropIndex : public SQL {
-private:
+ private:
   std::string idx_name_;
 
-public:
+ public:
   SQLDropIndex(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   std::string idx_name() { return idx_name_; }
   void set_idx_name(std::string idxname) { idx_name_ = idxname; }
@@ -200,10 +199,10 @@ public:
 };
 
 class SQLUse : public SQL {
-private:
+ private:
   std::string db_name_;
 
-public:
+ public:
   SQLUse(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   std::string db_name() { return db_name_; }
   void set_db_name(std::string dbname) { db_name_ = dbname; }
@@ -211,11 +210,11 @@ public:
 };
 
 class SQLCreateTable : public SQL {
-private:
+ private:
   std::string tb_name_;
   std::vector<Attribute> attrs_;
 
-public:
+ public:
   SQLCreateTable(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   std::string tb_name() { return tb_name_; }
   void set_tb_name(std::string tbname) { tb_name_ = tbname; }
@@ -230,11 +229,11 @@ typedef struct {
 } SQLValue;
 
 class SQLInsert : public SQL {
-private:
+ private:
   std::string tb_name_;
   std::vector<SQLValue> values_;
 
-public:
+ public:
   SQLInsert(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   void Parse(std::vector<std::string> sql_vector);
   std::string tb_name() { return tb_name_; }
@@ -242,10 +241,10 @@ public:
 };
 
 class SQLExec : public SQL {
-private:
+ private:
   std::string file_name_;
 
-public:
+ public:
   SQLExec(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   void Parse(std::vector<std::string> sql_vector);
   std::string file_name() { return file_name_; }
@@ -258,11 +257,11 @@ typedef struct {
 } SQLWhere;
 
 class SQLSelect : public SQL {
-private:
+ private:
   std::string tb_name_;
   std::vector<SQLWhere> wheres_;
 
-public:
+ public:
   SQLSelect(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   void Parse(std::vector<std::string> sql_vector);
   std::string tb_name() { return tb_name_; }
@@ -270,12 +269,12 @@ public:
 };
 
 class SQLCreateIndex : public SQL {
-private:
+ private:
   std::string index_name_;
   std::string tb_name_;
   std::string col_name_;
 
-public:
+ public:
   SQLCreateIndex(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   void Parse(std::vector<std::string> sql_vector);
   std::string index_name() { return index_name_; }
@@ -284,11 +283,11 @@ public:
 };
 
 class SQLDelete : public SQL {
-private:
+ private:
   std::string tb_name_;
   std::vector<SQLWhere> wheres_;
 
-public:
+ public:
   SQLDelete(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   void Parse(std::vector<std::string> sql_vector);
   std::string tb_name() { return tb_name_; }
@@ -301,12 +300,12 @@ typedef struct {
 } SQLKeyValue;
 
 class SQLUpdate : public SQL {
-private:
+ private:
   std::string tb_name_;
   std::vector<SQLWhere> wheres_;
   std::vector<SQLKeyValue> keyvalues_;
 
-public:
+ public:
   SQLUpdate(std::vector<std::string> sql_vector) { Parse(sql_vector); }
   void Parse(std::vector<std::string> sql_vector);
   std::string tb_name() { return tb_name_; }

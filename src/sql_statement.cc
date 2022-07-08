@@ -5,32 +5,30 @@
 
 #include "sql_statement.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
-
-#include <boost/algorithm/string.hpp>
 
 #include "commons.h"
 #include "exceptions.h"
 
-using namespace boost::algorithm;
 using namespace std;
 
 std::ostream &operator<<(std::ostream &out, const TKey &object) {
   switch (object.key_type_) {
-  case 0: {
-    int a;
-    memcpy(&a, object.key_, object.length_);
-    cout << setw(9) << left << a;
-  } break;
-  case 1: {
-    float a;
-    memcpy(&a, object.key_, object.length_);
-    cout << setw(9) << left << a;
-  } break;
-  case 2: {
-    cout << setw(9) << left << object.key_;
-  } break;
+    case 0: {
+      int a;
+      memcpy(&a, object.key_, object.length_);
+      cout << setw(9) << left << a;
+    } break;
+    case 1: {
+      float a;
+      memcpy(&a, object.key_, object.length_);
+      cout << setw(9) << left << a;
+    } break;
+    case 2: {
+      cout << setw(9) << left << object.key_;
+    } break;
   }
 
   return out;
@@ -245,8 +243,9 @@ void SQLCreateIndex::Parse(std::vector<std::string> sql_vector) {
   std::cout << "INDEX NAME: " << sql_vector[pos] << std::endl;
   index_name_ = sql_vector[pos];
   pos++;
-
-  if (to_lower_copy(sql_vector[pos]) != "on") {
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
+  if (sql_vector[pos] != "on") {
     throw SyntaxErrorException();
   }
   pos++;
@@ -254,8 +253,10 @@ void SQLCreateIndex::Parse(std::vector<std::string> sql_vector) {
   std::cout << "TABLE NAME: " << sql_vector[pos] << std::endl;
   tb_name_ = sql_vector[pos];
   pos++;
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
 
-  if (to_lower_copy(sql_vector[pos]) != "(") {
+  if (sql_vector[pos] != "(") {
     throw SyntaxErrorException();
   }
   pos++;
@@ -263,8 +264,10 @@ void SQLCreateIndex::Parse(std::vector<std::string> sql_vector) {
   std::cout << "COLUMN NAME: " << sql_vector[pos] << std::endl;
   col_name_ = sql_vector[pos];
   pos++;
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
 
-  if (to_lower_copy(sql_vector[pos]) != ")") {
+  if (sql_vector[pos] != ")") {
     throw SyntaxErrorException();
   }
   pos++;
@@ -274,19 +277,26 @@ void SQLInsert::Parse(std::vector<std::string> sql_vector) {
   sql_type_ = 70;
   unsigned int pos = 1;
   bool is_attr = true;
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
 
-  if (to_lower_copy(sql_vector[pos]) != "into") {
+  if (sql_vector[pos] != "into") {
     throw SyntaxErrorException();
   }
   pos++;
   cout << "TABLE NAME: " << sql_vector[pos] << endl;
   tb_name_ = sql_vector[pos];
   pos++;
-  if (to_lower_copy(sql_vector[pos]) != "values") {
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
+
+  if (sql_vector[pos] != "values") {
     throw SyntaxErrorException();
   }
   pos++;
-  if (to_lower_copy(sql_vector[pos]) != "(") {
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
+  if (sql_vector[pos] != "(") {
     throw SyntaxErrorException();
   }
   pos++;
@@ -317,8 +327,9 @@ void SQLInsert::Parse(std::vector<std::string> sql_vector) {
 
 int SQL::ParseDataType(std::vector<std::string> sql_vector, Attribute &attr,
                        unsigned int pos) {
-  boost::algorithm::to_lower(sql_vector[pos]);
-
+  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
+                 sql_vector[pos].begin(), ::tolower);
+  // std::algorithm::to_lower(sql_vector[pos]);
   if (sql_vector[pos] == "int") {
     std::cout << "TYPE: "
               << "int" << std::endl;

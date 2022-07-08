@@ -16,12 +16,12 @@
 #include "sql_statement.h"
 
 class RecordManager {
-private:
+ private:
   BufferManager *hdl_;
   CatalogManager *cm_;
   std::string db_name_;
 
-public:
+ public:
   RecordManager(CatalogManager *cm, BufferManager *hdl, std::string db)
       : cm_(cm), hdl_(hdl), db_name_(db) {}
   ~RecordManager() {}

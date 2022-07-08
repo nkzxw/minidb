@@ -115,8 +115,7 @@ bool BPlusTree::AdjustAfterAdd(int node) {
 
   if (parent == -1) {
     BPlusTreeNode *newroot = new BPlusTreeNode(true, this, GetNewBlockNum());
-    if (newroot == NULL)
-      return false;
+    if (newroot == NULL) return false;
 
     idx_->IncreaseNodeCount();
     idx_->set_root(newroot->block_num());
@@ -220,7 +219,6 @@ void BPlusTree::PrintNode(int num) {
 
   pnode->Print();
   if (!pnode->GetIsLeaf()) {
-
     for (int i = 0; i <= pnode->GetCount(); i++) {
       PrintNode(pnode->GetValues(i));
     }
@@ -237,9 +235,7 @@ int BPlusTree::GetVal(TKey key) {
 }
 
 bool BPlusTree::Remove(TKey key) {
-
-  if (idx_->root() == -1)
-    return false;
+  if (idx_->root() == -1) return false;
 
   BPlusTreeNode *rootnode = GetNode(idx_->root());
   FindNodeParam fnp = Search(idx_->root(), key);
@@ -301,9 +297,7 @@ bool BPlusTree::AdjustAfterRemove(int node) {
     pbrother = GetNode(pparent->GetValues(pos - 1));
 
     if (pbrother->GetCount() > idx_->rank()) {
-
       if (pnode->GetIsLeaf()) {
-
         for (int i = pnode->GetCount(); i > 0; i--) {
           pnode->SetKeys(i, pnode->GetKeys(i - 1));
           pnode->SetValues(i, pnode->GetValues(i - 1));
@@ -320,7 +314,6 @@ bool BPlusTree::AdjustAfterRemove(int node) {
 
         return true;
       } else {
-
         for (int i = pnode->GetCount(); i > 0; i--) {
           pnode->SetKeys(i, pnode->GetKeys(i - 1));
         }
@@ -335,7 +328,6 @@ bool BPlusTree::AdjustAfterRemove(int node) {
         pnode->SetCount(pnode->GetCount() + 1);
 
         if (pbrother->GetValues(pbrother->GetCount()) >= 0) {
-
           GetNode(pbrother->GetValues(pbrother->GetCount()))
               ->SetParent(pnode->block_num());
           pbrother->SetValues(pbrother->GetCount(), -1);
@@ -344,7 +336,6 @@ bool BPlusTree::AdjustAfterRemove(int node) {
         return true;
       }
     } else {
-
       if (pnode->GetIsLeaf()) {
         pparent->RemoveAt(pos - 1);
         pparent->SetValues(pos - 1, pbrother->block_num());
@@ -388,7 +379,6 @@ bool BPlusTree::AdjustAfterRemove(int node) {
     pbrother = GetNode(pparent->GetValues(pos + 1));
 
     if (pbrother->GetCount() > idx_->rank()) {
-
       if (pnode->GetIsLeaf()) {
         pparent->SetKeys(pos, pbrother->GetKeys(0));
         pnode->SetKeys(pnode->GetCount(), pbrother->GetKeys(0));
@@ -400,7 +390,6 @@ bool BPlusTree::AdjustAfterRemove(int node) {
 
         return true;
       } else {
-
         pnode->SetKeys(pnode->GetCount(), pparent->GetKeys(pos));
         pnode->SetValues(pnode->GetCount() + 1, pbrother->GetValues(0));
         pnode->SetCount(pnode->GetCount() + 1);
@@ -411,11 +400,8 @@ bool BPlusTree::AdjustAfterRemove(int node) {
         return true;
       }
     } else {
-
       if (pnode->GetIsLeaf()) {
-
         for (int i = 0; i < idx_->rank(); i++) {
-
           pnode->SetKeys(pnode->GetCount() + i, pbrother->GetKeys(i));
           pnode->SetValues(pnode->GetCount() + i, pbrother->GetValues(i));
           pbrother->SetValues(i, -1);
@@ -429,7 +415,6 @@ bool BPlusTree::AdjustAfterRemove(int node) {
         pparent->SetValues(pos, pnode->block_num());
         return AdjustAfterRemove(pparent->block_num());
       } else {
-
         pnode->SetKeys(pnode->GetCount(), pparent->GetKeys(pos));
 
         pparent->RemoveAt(pos);
@@ -563,7 +548,7 @@ bool BPlusTreeNode::Search(TKey key, int &index) {
     return false;
   }
 
-  if (GetCount() > 20) { // do binary search
+  if (GetCount() > 20) {  // do binary search
     int m, s, e;
     s = 0;
     e = GetCount() - 1;
@@ -607,7 +592,7 @@ bool BPlusTreeNode::Search(TKey key, int &index) {
       }
     }
     return false;
-  } else { // do sequential search
+  } else {  // do sequential search
     for (int i = 0; i < GetCount(); i++) {
       if (key < GetKeys(i)) {
         index = i;
@@ -632,7 +617,6 @@ int BPlusTreeNode::Add(TKey &key) {
   }
 
   if (!Search(key, index)) {
-
     for (int i = GetCount(); i > index; i--) {
       SetKeys(i, GetKeys(i - 1));
     }
@@ -658,7 +642,6 @@ int BPlusTreeNode::Add(TKey &key, int &val) {
   }
 
   if (!Search(key, index)) {
-
     for (int i = GetCount(); i > index; i--) {
       SetKeys(i, GetKeys(i - 1));
       SetValues(i, GetValues(i - 1));
@@ -724,7 +707,6 @@ bool BPlusTreeNode::RemoveAt(int index) {
   }
 
   if (GetIsLeaf()) {
-
     for (int i = index; i < GetCount() - 1; i++) {
       SetKeys(i, GetKeys(i + 1));
       SetValues(i, GetValues(i + 1));

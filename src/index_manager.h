@@ -16,12 +16,12 @@ class BPlusTreeNode;
 class BPlusTree;
 
 class IndexManager {
-private:
+ private:
   BufferManager *hdl_;
   CatalogManager *cm_;
   std::string db_name_;
 
-public:
+ public:
   IndexManager(CatalogManager *cm, BufferManager *hdl, std::string db) {
     hdl_ = hdl;
     cm_ = cm;
@@ -38,14 +38,14 @@ typedef struct {
 } FindNodeParam;
 
 class BPlusTree {
-private:
+ private:
   Index *idx_;
   int degree_;
   BufferManager *hdl_;
   CatalogManager *cm_;
   std::string db_name_;
 
-public:
+ public:
   BPlusTree(Index *idx, BufferManager *hdl, CatalogManager *cm,
             std::string db_name) {
     hdl_ = hdl;
@@ -78,12 +78,12 @@ public:
   void Print();
   void PrintNode(int num);
 
-private:
+ private:
   void InitTree();
 };
 
 class BPlusTreeNode {
-private:
+ private:
   BPlusTree *tree_;
   int block_num_;
   int rank_;
@@ -91,7 +91,7 @@ private:
   bool is_leaf_;
   bool is_new_node_;
 
-public:
+ public:
   BPlusTreeNode(bool isnew, BPlusTree *tree, int blocknum,
                 bool newleaf = false);
   ~BPlusTreeNode() {}
@@ -122,8 +122,7 @@ public:
   BPlusTreeNode *Split(TKey &key);
 
   bool IsRoot() {
-    if (GetParent() != -1)
-      return false;
+    if (GetParent() != -1) return false;
     return true;
   }
 

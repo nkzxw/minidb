@@ -2,7 +2,6 @@
 //  All rights reserved.
 //
 //  Author: yan.chen.im@gmail.com (Yan Chen)
-
 #include "file_handle.h"
 
 #include <fstream>
@@ -90,7 +89,6 @@ void FileHandle::IncreaseAge() {
 }
 
 BlockInfo *FileHandle::RecycleBlock() {
-
   FileInfo *fp = first_file_;
 
   BlockInfo *oldestbefore = NULL;
@@ -100,7 +98,6 @@ BlockInfo *FileHandle::RecycleBlock() {
     BlockInfo *bpbefore = NULL;
     BlockInfo *bp = fp->first_block();
     while (bp != NULL) {
-
       if (bp->age() > oldest->age()) {
         oldestbefore = bpbefore;
         oldest = bp;

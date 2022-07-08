@@ -6,7 +6,7 @@ MiniDB is a simplified database engine implemented in C++, for the purpose of un
 ## Compile
 
 To compile, you need two open source C++ libraries installed:
-* boost
+* gcc7
 * readline
 
 On Mac OS X, XCode could be used to open "MiniDB.xcodeproj" directly. It's recommended to install the two libraries needed with Homebrew. If you are using readline library not through Homebrew or not with version 8.0.1, you will need to change the header search path and library search path of readline in XCode.

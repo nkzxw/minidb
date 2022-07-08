@@ -12,14 +12,14 @@
 #include "file_handle.h"
 
 class BufferManager {
-private:
+ private:
   BlockHandle *bhandle_;
   FileHandle *fhandle_;
   std::string path_;
 
   BlockInfo *GetUsableBlock();
 
-public:
+ public:
   BufferManager(std::string p)
       : bhandle_(new BlockHandle(p)), fhandle_(new FileHandle(p)), path_(p) {}
   ~BufferManager() {

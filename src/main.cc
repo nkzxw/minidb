@@ -3,19 +3,25 @@
 //
 //  Author: yan.chen.im@gmail.com (Yan Chen)
 
-#include <iostream>
-#include <string>
-
-#include <boost/algorithm/string.hpp>
 #include <readline/history.h>
 #include <readline/readline.h>
+
+#include <algorithm>
+#include <iostream>
+#include <string>
 
 #include "interpreter.h"
 
 using namespace std;
-
+std::string &trim(std::string &s) {
+  if (s.empty()) {
+    return s;
+  }
+  s.erase(0, s.find_first_not_of(" "));
+  s.erase(s.find_last_not_of(" ") + 1);
+  return s;
+}
 int main(int argc, const char *argv[]) {
-
   string sql;
   Interpreter itp;
 
@@ -28,7 +34,7 @@ int main(int argc, const char *argv[]) {
     line = readline("MiniDB> ");
     sql = string(line);
     free(line);
-    boost::algorithm::trim(sql);
+    trim(sql);
 
     if (sql.compare(0, 4, "exit") == 0 || sql.compare(0, 4, "quit") == 0) {
       itp.ExecSQL("quit");

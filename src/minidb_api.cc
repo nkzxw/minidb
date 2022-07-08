@@ -5,12 +5,10 @@
 
 #include "minidb_api.h"
 
+#include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
-
 #include <vector>
-
-#include <boost/filesystem.hpp>
 
 #include "catalog_manager.h"
 #include "exceptions.h"
@@ -18,6 +16,7 @@
 #include "record_manager.h"
 
 using namespace std;
+namespace fs = std::experimental::filesystem;
 
 MiniDBAPI::MiniDBAPI(std::string p) : path_(p) { cm_ = new CatalogManager(p); }
 
@@ -57,20 +56,19 @@ void MiniDBAPI::Help() {
 void MiniDBAPI::CreateDatabase(SQLCreateDatabase &st) {
   std::cout << "Creating database: " << st.db_name() << std::endl;
   std::string folder_name(path_ + st.db_name());
-  boost::filesystem::path folder_path(folder_name);
-
-  folder_path.imbue(std::locale("en_US.UTF-8"));
+  fs::path folder_path(folder_name);
+  // folder_path.imbue(std::locale("en_US.UTF-8"));
 
   if (cm_->GetDB(st.db_name()) != NULL) {
     throw DatabaseAlreadyExistsException();
   }
 
-  if (boost::filesystem::exists(folder_path)) {
-    boost::filesystem::remove_all(folder_path);
+  if (fs::exists(folder_path)) {
+    fs::remove_all(folder_path);
     std::cout << "Database folder exists and deleted!" << std::endl;
   }
 
-  boost::filesystem::create_directories(folder_path);
+  fs::create_directories(folder_path);
   std::cout << "Database folder created!" << std::endl;
 
   cm_->CreateDatabase(st.db_name());
@@ -104,14 +102,12 @@ void MiniDBAPI::DropDatabase(SQLDropDatabase &st) {
   }
 
   std::string folder_name(path_ + st.db_name());
-  boost::filesystem::path folder_path(folder_name);
-
-  folder_path.imbue(std::locale("en_US.UTF-8"));
-
-  if (!boost::filesystem::exists(folder_path)) {
+  fs::path folder_path(folder_name);
+  // folder_path.imbue(std::locale("en_US.UTF-8"));
+  if (!fs::exists(folder_path)) {
     std::cout << "Database folder doesn't exists!" << std::endl;
   } else {
-    boost::filesystem::remove_all(folder_path);
+    fs::remove_all(folder_path);
     std::cout << "Database folder deleted!" << std::endl;
   }
 
@@ -157,10 +153,10 @@ void MiniDBAPI::CreateTable(SQLCreateTable &st) {
   }
 
   std::string file_name(path_ + curr_db_ + "/" + st.tb_name() + ".records");
-  boost::filesystem::path folder_path(file_name);
+  fs::path folder_path(file_name);
 
-  if (boost::filesystem::exists(file_name)) {
-    boost::filesystem::remove(file_name);
+  if (fs::exists(file_name)) {
+    fs::remove(file_name);
     std::cout << "Table file already exists and deleted!" << std::endl;
   }
 
@@ -259,10 +255,10 @@ void MiniDBAPI::DropTable(SQLDropTable &st) {
 
   std::string file_name(path_ + curr_db_ + "/" + st.tb_name() + ".records");
 
-  if (!boost::filesystem::exists(file_name)) {
+  if (!fs::exists(file_name)) {
     std::cout << "Table file doesn't exist!" << std::endl;
   } else {
-    boost::filesystem::remove(file_name);
+    fs::remove(file_name);
     std::cout << "Table file removed!" << std::endl;
   }
 
@@ -270,10 +266,10 @@ void MiniDBAPI::DropTable(SQLDropTable &st) {
   for (int i = 0; i < tb->GetIndexNum(); ++i) {
     std::string file_name(path_ + curr_db_ + "/" + tb->GetIndex(i)->name() +
                           ".index");
-    if (!boost::filesystem::exists(file_name)) {
+    if (!fs::exists(file_name)) {
       std::cout << "Index file doesn't exist!" << std::endl;
     } else {
-      boost::filesystem::remove(file_name);
+      fs::remove(file_name);
       std::cout << "Index file removed!" << std::endl;
     }
   }
@@ -299,11 +295,11 @@ void MiniDBAPI::DropIndex(SQLDropIndex &st) {
 
   std::string file_name(path_ + curr_db_ + "/" + st.idx_name() + ".index");
 
-  if (!boost::filesystem::exists(file_name)) {
+  if (!fs::exists(file_name)) {
     std::cout << "Index file doesn't exist!" << std::endl;
     return;
   }
-  boost::filesystem::remove(file_name);
+  fs::remove(file_name);
   std::cout << "Index file removed!" << std::endl;
 
   db->DropIndex(st);

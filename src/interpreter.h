@@ -13,7 +13,7 @@
 #include "sql_statement.h"
 
 class Interpreter {
-private:
+ private:
   MiniDBAPI *api;
   std::string sql_statement_;
   std::vector<std::string> sql_vector_;
@@ -22,7 +22,7 @@ private:
   void FormatSQL();
   void Run();
 
-public:
+ public:
   Interpreter();
   ~Interpreter();
   void ExecSQL(std::string statement);

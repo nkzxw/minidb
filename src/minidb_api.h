@@ -13,13 +13,13 @@
 #include "sql_statement.h"
 
 class MiniDBAPI {
-private:
+ private:
   std::string path_;
   CatalogManager *cm_;
   BufferManager *hdl_;
   std::string curr_db_;
 
-public:
+ public:
   MiniDBAPI(std::string p);
   ~MiniDBAPI();
   void Quit();

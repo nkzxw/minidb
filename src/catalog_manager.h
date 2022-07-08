@@ -6,13 +6,11 @@
 #ifndef MINIDB_CATALOG_MANAGER_H_
 #define MINIDB_CATALOG_MANAGER_H_
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/vector.hpp>
 #include <string>
 #include <vector>
-
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
 
 #include "sql_statement.h"
 
@@ -25,17 +23,18 @@ class SQLDropTable;
 class SQLDropIndex;
 
 class CatalogManager {
-private:
-  friend class boost::serialization::access;
+ private:
+  friend class cereal::access;
+  ;
 
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    ar &dbs_;
+  void serialize(Archive &archive, const unsigned int version) {
+    archive(dbs_);
   }
   std::string path_;
   std::vector<Database> dbs_;
 
-public:
+ public:
   CatalogManager(std::string p);
   ~CatalogManager();
   std::vector<Database> &dbs() { return dbs_; }
@@ -48,18 +47,18 @@ public:
 };
 
 class Database {
-private:
-  friend class boost::serialization::access;
+ private:
+  friend class cereal::access;
+  ;
 
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    ar &db_name_;
-    ar &tbs_;
+  void serialize(Archive &archive, const unsigned int version) {
+    archive(db_name_, db_name_, tbs_);
   }
   std::string db_name_;
   std::vector<Table> tbs_;
 
-public:
+ public:
   Database() {}
   Database(std::string dbname);
   ~Database() {}
@@ -73,18 +72,14 @@ public:
 };
 
 class Table {
-private:
-  friend class boost::serialization::access;
+ private:
+  friend class cereal::access;
+  ;
 
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    ar &tb_name_;
-    ar &record_length_;
-    ar &first_block_num_;
-    ar &first_rubbish_num_;
-    ar &block_count_;
-    ar &ats_;
-    ar &ids_;
+  void serialize(Archive &archive, const unsigned int version) {
+    archive(tb_name_, record_length_, first_block_num_, first_rubbish_num_,
+            block_count_, ats_, ids_);
   }
 
   std::string tb_name_;
@@ -97,10 +92,13 @@ private:
   std::vector<Attribute> ats_;
   std::vector<Index> ids_;
 
-public:
+ public:
   Table()
-      : tb_name_(""), record_length_(-1), first_block_num_(-1),
-        first_rubbish_num_(-1), block_count_(0) {}
+      : tb_name_(""),
+        record_length_(-1),
+        first_block_num_(-1),
+        first_rubbish_num_(-1),
+        block_count_(0) {}
   ~Table() {}
 
   std::string tb_name() { return tb_name_; }
@@ -130,15 +128,13 @@ public:
 };
 
 class Attribute {
-private:
-  friend class boost::serialization::access;
+ private:
+  friend class cereal::access;
+  ;
 
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    ar &attr_name_;
-    ar &data_type_;
-    ar &length_;
-    ar &attr_type_;
+  void serialize(Archive &archive, const unsigned int version) {
+    archive(attr_name_, data_type_, length_, attr_type_);
   }
 
   std::string attr_name_;
@@ -146,7 +142,7 @@ private:
   int length_;
   int attr_type_;
 
-public:
+ public:
   Attribute() : attr_name_(""), data_type_(-1), length_(-1), attr_type_(0) {}
   ~Attribute() {}
 
@@ -165,23 +161,14 @@ public:
 };
 
 class Index {
-private:
-  friend class boost::serialization::access;
+ private:
+  friend class cereal::access;
+  ;
 
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    ar &max_count_;
-    ar &attr_name_;
-    ar &name_;
-    ar &key_len_;
-    ar &key_type_;
-    ar &rank_;
-    ar &rubbish_;
-    ar &root_;
-    ar &leaf_head_;
-    ar &key_count_;
-    ar &level_;
-    ar &node_count_;
+  void serialize(Archive &archive, const unsigned int version) {
+    archive(max_count_, attr_name_, name_, key_len_, key_type_, rank_, rubbish_,
+            root_, leaf_head_, key_count_, level_, node_count_);
   }
   int max_count_;
   int key_len_;
@@ -196,7 +183,7 @@ private:
   std::string attr_name_;
   std::string name_;
 
-public:
+ public:
   Index() {}
   Index(std::string name, std::string attr_name, int keytype, int keylen,
         int rank) {

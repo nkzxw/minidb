@@ -9,16 +9,16 @@
 #include "block_info.h"
 
 class BlockHandle {
-private:
+ private:
   BlockInfo *first_block_;
-  int bsize_;  // total #
-  int bcount_; // usable #
+  int bsize_;   // total #
+  int bcount_;  // usable #
   std::string path_;
 
   // Inits BlockHandle
   BlockInfo *Add(BlockInfo *block);
 
-public:
+ public:
   BlockHandle(std::string p)
       : first_block_(new BlockInfo(0)), bsize_(300), bcount_(0), path_(p) {
     Add(first_block_);

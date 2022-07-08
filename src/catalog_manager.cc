@@ -5,11 +5,11 @@
 
 #include "catalog_manager.h"
 
+#include <experimental/filesystem>
 #include <fstream>
 
-#include <boost/filesystem.hpp>
-
 using namespace std;
+namespace fs = std::experimental::filesystem;
 
 //=======================CatalogManager=======================//
 
@@ -19,14 +19,14 @@ CatalogManager::~CatalogManager() { WriteArchiveFile(); }
 
 void CatalogManager::ReadArchiveFile() {
   std::string file_name = path_ + "catalog";
-  boost::filesystem::path file_path(file_name);
+  fs::path file_path(file_name);
 
-  file_path.imbue(std::locale("en_US.UTF-8"));
+  // file_path.imbue(std::locale("en_US.UTF-8"));
 
-  if (boost::filesystem::exists(file_path)) {
+  if (fs::exists(file_path)) {
     std::ifstream ifs;
     ifs.open(file_name.c_str(), std::ios::binary);
-    boost::archive::binary_iarchive iar(ifs);
+    cereal::BinaryInputArchive iar(ifs);
     iar >> (*this);
     ifs.close();
   }
@@ -37,7 +37,7 @@ void CatalogManager::WriteArchiveFile() {
 
   std::ofstream ofs;
   ofs.open(file_name.c_str(), std::ios::binary);
-  boost::archive::binary_oarchive oar(ofs);
+  cereal::BinaryOutputArchive oar(ofs);
   oar << (*this);
   ofs.close();
 }

@@ -12,11 +12,11 @@
 #include "file_info.h"
 
 class FileHandle {
-private:
+ private:
   FileInfo *first_file_;
   std::string path_;
 
-public:
+ public:
   FileHandle(std::string p) : first_file_(new FileInfo()), path_(p) {}
   ~FileHandle();
   FileInfo *GetFileInfo(std::string db_name, std::string tb_name,

@@ -5,12 +5,11 @@
 
 #include "interpreter.h"
 
+#include <algorithm>
+#include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
+#include <regex>
 
 #include "exceptions.h"
 #include "minidb_api.h"
@@ -38,32 +37,32 @@ vector<string> split(string str, string sep) {
 
 void Interpreter::FormatSQL() {
   // remove newlines, tabs
-  boost::regex reg("[\r\n\t]");
+  std::regex reg("[\r\n\t]");
   // string newstr(" ");
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, " ");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, " ");
 
   // remove ; and chars after ;
   reg = ";.*$";
   // string newstr(" ");
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, "");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, "");
 
   // remove leading spaces and trailing spaces
   reg = "(^ +)|( +$)";
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, "");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, "");
 
   // remove duplicate spaces
   reg = " +";
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, " ");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, " ");
 
   // insert space before or after ( ) , = <> < >
   reg = " ?(\\(|\\)|,|=|(<>)|<|>) ?";
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, " $1 ");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, " $1 ");
   reg = "< *>";
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, "<>");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, "<>");
   reg = "< *=";
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, "<=");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, "<=");
   reg = "> *=";
-  sql_statement_ = boost::regex_replace(sql_statement_, reg, ">=");
+  sql_statement_ = std::regex_replace(sql_statement_, reg, ">=");
 
   // split sql_statement_
   sql_vector_ = split(sql_statement_, " ");
@@ -75,7 +74,10 @@ void Interpreter::TellSQLType() {
     cout << "SQL TYPE: #EMPTY#" << endl;
     return;
   }
-  boost::algorithm::to_lower(sql_vector_[0]);
+
+  std::transform(sql_vector_[0].begin(), sql_vector_[0].end(),
+                 sql_vector_[0].begin(), ::tolower);
+  // std::algorithm::to_lower(sql_vector_[0]);
   if (sql_vector_[0] == "quit") {
     cout << "SQL TYPE: #QUIT#" << endl;
     sql_type_ = 10;
@@ -83,7 +85,9 @@ void Interpreter::TellSQLType() {
     cout << "SQL TYPE: #HELP#" << endl;
     sql_type_ = 20;
   } else if (sql_vector_[0] == "create") {
-    boost::algorithm::to_lower(sql_vector_[1]);
+    std::transform(sql_vector_[1].begin(), sql_vector_[1].end(),
+                   sql_vector_[1].begin(), ::tolower);
+    // std::algorithm::to_lower(sql_vector_[1]);
     if (sql_vector_[1] == "database") {
       cout << "SQL TYPE: #CREATE DATABASE#" << endl;
       sql_type_ = 30;
@@ -97,7 +101,9 @@ void Interpreter::TellSQLType() {
       sql_type_ = -1;
     }
   } else if (sql_vector_[0] == "show") {
-    boost::algorithm::to_lower(sql_vector_[1]);
+    std::transform(sql_vector_[1].begin(), sql_vector_[1].end(),
+                   sql_vector_[1].begin(), ::tolower);
+    // std::algorithm::to_lower(sql_vector_[1]);
     if (sql_vector_[1] == "databases") {
       cout << "SQL TYPE: #SHOW DATABASES#" << endl;
       sql_type_ = 40;
@@ -108,7 +114,9 @@ void Interpreter::TellSQLType() {
       sql_type_ = -1;
     }
   } else if (sql_vector_[0] == "drop") {
-    boost::algorithm::to_lower(sql_vector_[1]);
+    std::transform(sql_vector_[1].begin(), sql_vector_[1].end(),
+                   sql_vector_[1].begin(), ::tolower);
+    // std::algorithm::to_lower(sql_vector_[1]);
     if (sql_vector_[1] == "database") {
       cout << "SQL TYPE: #DROP DATABASE#" << endl;
       sql_type_ = 50;
@@ -148,92 +156,92 @@ void Interpreter::TellSQLType() {
 void Interpreter::Run() {
   try {
     switch (sql_type_) {
-    case 10: {
-      api->Quit();
-      exit(0);
-    } break;
-    case 20: {
-      api->Help();
-    } break;
-    case 30: {
-      SQLCreateDatabase *st = new SQLCreateDatabase(sql_vector_);
-      api->CreateDatabase(*st);
-      delete st;
-    } break;
-    case 31: {
-      SQLCreateTable *st = new SQLCreateTable(sql_vector_);
-      api->CreateTable(*st);
-      delete st;
-    } break;
-    case 32: {
-      SQLCreateIndex *st = new SQLCreateIndex(sql_vector_);
-      api->CreateIndex(*st);
-      delete st;
-    } break;
-    case 40: {
-      api->ShowDatabases();
-    } break;
-    case 41: {
-      api->ShowTables();
-    } break;
-    case 50: {
-      SQLDropDatabase *st = new SQLDropDatabase(sql_vector_);
-      api->DropDatabase(*st);
-      delete st;
-    } break;
-    case 51: {
-      SQLDropTable *st = new SQLDropTable(sql_vector_);
-      api->DropTable(*st);
-      delete st;
-    } break;
-    case 52: {
-      SQLDropIndex *st = new SQLDropIndex(sql_vector_);
-      api->DropIndex(*st);
-      delete st;
-    } break;
-    case 60: {
-      SQLUse *st = new SQLUse(sql_vector_);
-      api->Use(*st);
-      delete st;
-    } break;
-    case 70: {
-      SQLInsert *st = new SQLInsert(sql_vector_);
-      api->Insert(*st);
-      delete st;
-    } break;
-    case 80: {
-      SQLExec *st = new SQLExec(sql_vector_);
-      string contents;
-      ifstream in(st->file_name(), ios::in | ios::binary);
-      in.seekg(0, std::ios::end);
-      contents.resize(in.tellg());
-      in.seekg(0, std::ios::beg);
-      in.read(&contents[0], contents.size());
-      in.close();
-      cout << endl;
-      vector<string> sqls = split(contents, ";");
-      for (int i = 0; i < sqls.size() - 1; ++i) {
-        ExecSQL(sqls[i]);
-      }
-      delete st;
-    } break;
-    case 90: {
-      SQLSelect *st = new SQLSelect(sql_vector_);
-      api->Select(*st);
-      delete st;
-    } break;
-    case 100: {
-      SQLDelete *st = new SQLDelete(sql_vector_);
-      api->Delete(*st);
-      delete st;
-    } break;
-    case 110: {
-      SQLUpdate *st = new SQLUpdate(sql_vector_);
-      api->Update(*st);
-      delete st;
-    } break;
-    default:
-      break;
+      case 10: {
+        api->Quit();
+        exit(0);
+      } break;
+      case 20: {
+        api->Help();
+      } break;
+      case 30: {
+        SQLCreateDatabase *st = new SQLCreateDatabase(sql_vector_);
+        api->CreateDatabase(*st);
+        delete st;
+      } break;
+      case 31: {
+        SQLCreateTable *st = new SQLCreateTable(sql_vector_);
+        api->CreateTable(*st);
+        delete st;
+      } break;
+      case 32: {
+        SQLCreateIndex *st = new SQLCreateIndex(sql_vector_);
+        api->CreateIndex(*st);
+        delete st;
+      } break;
+      case 40: {
+        api->ShowDatabases();
+      } break;
+      case 41: {
+        api->ShowTables();
+      } break;
+      case 50: {
+        SQLDropDatabase *st = new SQLDropDatabase(sql_vector_);
+        api->DropDatabase(*st);
+        delete st;
+      } break;
+      case 51: {
+        SQLDropTable *st = new SQLDropTable(sql_vector_);
+        api->DropTable(*st);
+        delete st;
+      } break;
+      case 52: {
+        SQLDropIndex *st = new SQLDropIndex(sql_vector_);
+        api->DropIndex(*st);
+        delete st;
+      } break;
+      case 60: {
+        SQLUse *st = new SQLUse(sql_vector_);
+        api->Use(*st);
+        delete st;
+      } break;
+      case 70: {
+        SQLInsert *st = new SQLInsert(sql_vector_);
+        api->Insert(*st);
+        delete st;
+      } break;
+      case 80: {
+        SQLExec *st = new SQLExec(sql_vector_);
+        string contents;
+        ifstream in(st->file_name(), ios::in | ios::binary);
+        in.seekg(0, std::ios::end);
+        contents.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&contents[0], contents.size());
+        in.close();
+        cout << endl;
+        vector<string> sqls = split(contents, ";");
+        for (int i = 0; i < sqls.size() - 1; ++i) {
+          ExecSQL(sqls[i]);
+        }
+        delete st;
+      } break;
+      case 90: {
+        SQLSelect *st = new SQLSelect(sql_vector_);
+        api->Select(*st);
+        delete st;
+      } break;
+      case 100: {
+        SQLDelete *st = new SQLDelete(sql_vector_);
+        api->Delete(*st);
+        delete st;
+      } break;
+      case 110: {
+        SQLUpdate *st = new SQLUpdate(sql_vector_);
+        api->Update(*st);
+        delete st;
+      } break;
+      default:
+        break;
     }
   } catch (SyntaxErrorException &e) {
     cerr << "Syntax Error!" << endl;
