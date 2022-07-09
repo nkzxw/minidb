@@ -19,15 +19,15 @@ std::ostream &operator<<(std::ostream &out, const TKey &object) {
     case 0: {
       int a;
       memcpy(&a, object.key_, object.length_);
-      cout << setw(9) << left << a;
+      cout << setw(12) << left << a;
     } break;
     case 1: {
       float a;
       memcpy(&a, object.key_, object.length_);
-      cout << setw(9) << left << a;
+      cout << setw(12) << left << a;
     } break;
     case 2: {
-      cout << setw(9) << left << object.key_;
+      cout << setw(12) << left << object.key_;
     } break;
   }
 
@@ -42,12 +42,11 @@ void SQLSelect::Parse(std::vector<std::string> sql_vector) {
     throw SyntaxErrorException();
   }
 
-  if (sql_vector[pos] != "*") {
+  if (strcasecmp(sql_vector[pos].c_str(), "*")) {
     throw SyntaxErrorException();
   }
   pos++;
-
-  if (sql_vector[pos] != "from") {
+  if (strcasecmp(sql_vector[pos].c_str(), "from")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -60,7 +59,7 @@ void SQLSelect::Parse(std::vector<std::string> sql_vector) {
     return;
   }
 
-  if (sql_vector[pos] != "where") {
+  if (strcasecmp(sql_vector[pos].c_str(), "where")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -71,17 +70,17 @@ void SQLSelect::Parse(std::vector<std::string> sql_vector) {
     where.key = sql_vector[pos];
     pos++;
 
-    if (sql_vector[pos] == "=") {
+    if (!strcasecmp(sql_vector[pos].c_str(), "=")) {
       where.sign_type = SIGN_EQ;
-    } else if (sql_vector[pos] == "<") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<")) {
       where.sign_type = SIGN_LT;
-    } else if (sql_vector[pos] == ">") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), ">")) {
       where.sign_type = SIGN_GT;
-    } else if (sql_vector[pos] == "<=") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<=")) {
       where.sign_type = SIGN_LE;
-    } else if (sql_vector[pos] == ">=") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), ">=")) {
       where.sign_type = SIGN_GE;
-    } else if (sql_vector[pos] == "<>") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<>")) {
       where.sign_type = SIGN_NE;
     }
     pos++;
@@ -100,7 +99,7 @@ void SQLSelect::Parse(std::vector<std::string> sql_vector) {
       break;
     }
 
-    if (sql_vector[pos] != "and") {
+    if (strcasecmp(sql_vector[pos].c_str(), "and")) {
       throw SyntaxErrorException();
     }
     pos++;
@@ -180,7 +179,7 @@ void SQLCreateTable::Parse(std::vector<std::string> sql_vector) {
   tb_name_ = sql_vector[pos];
   pos++;
 
-  if (sql_vector[pos] != "(") {
+  if (strcasecmp(sql_vector[pos].c_str(), "(")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -189,10 +188,9 @@ void SQLCreateTable::Parse(std::vector<std::string> sql_vector) {
 
   while (is_attr) {
     is_attr = false;
-
-    if (sql_vector[pos] == "primary") {
+    if (!strcasecmp(sql_vector[pos].c_str(), "primary")) {
       pos++;
-      if (sql_vector[pos] != "key") {
+      if (strcasecmp(sql_vector[pos].c_str(), "key")) {
         throw SyntaxErrorException();
       }
       pos++;
@@ -201,7 +199,7 @@ void SQLCreateTable::Parse(std::vector<std::string> sql_vector) {
         throw SyntaxErrorException();
       }
 
-      if (sql_vector[pos] != "(") {
+      if (strcasecmp(sql_vector[pos].c_str(), "(")) {
         throw SyntaxErrorException();
       }
       pos++;
@@ -212,7 +210,7 @@ void SQLCreateTable::Parse(std::vector<std::string> sql_vector) {
         }
       }
       pos++;
-      if (sql_vector[pos] != ")") {
+      if (strcasecmp(sql_vector[pos].c_str(), ")")) {
         throw SyntaxErrorException();
       }
       has_pk = true;
@@ -226,7 +224,7 @@ void SQLCreateTable::Parse(std::vector<std::string> sql_vector) {
 
       attrs_.push_back(attr);
 
-      if (sql_vector[pos] != ")") {
+      if (strcasecmp(sql_vector[pos].c_str(), ")")) {
         is_attr = true;
       }
     }
@@ -243,9 +241,7 @@ void SQLCreateIndex::Parse(std::vector<std::string> sql_vector) {
   std::cout << "INDEX NAME: " << sql_vector[pos] << std::endl;
   index_name_ = sql_vector[pos];
   pos++;
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
-  if (sql_vector[pos] != "on") {
+  if (strcasecmp(sql_vector[pos].c_str(), "on")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -253,10 +249,7 @@ void SQLCreateIndex::Parse(std::vector<std::string> sql_vector) {
   std::cout << "TABLE NAME: " << sql_vector[pos] << std::endl;
   tb_name_ = sql_vector[pos];
   pos++;
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
-
-  if (sql_vector[pos] != "(") {
+  if (strcasecmp(sql_vector[pos].c_str(), "(")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -264,10 +257,7 @@ void SQLCreateIndex::Parse(std::vector<std::string> sql_vector) {
   std::cout << "COLUMN NAME: " << sql_vector[pos] << std::endl;
   col_name_ = sql_vector[pos];
   pos++;
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
-
-  if (sql_vector[pos] != ")") {
+  if (strcasecmp(sql_vector[pos].c_str(), ")")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -277,26 +267,18 @@ void SQLInsert::Parse(std::vector<std::string> sql_vector) {
   sql_type_ = 70;
   unsigned int pos = 1;
   bool is_attr = true;
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
-
-  if (sql_vector[pos] != "into") {
+  if (strcasecmp(sql_vector[pos].c_str(), "into")) {
     throw SyntaxErrorException();
   }
   pos++;
   cout << "TABLE NAME: " << sql_vector[pos] << endl;
   tb_name_ = sql_vector[pos];
   pos++;
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
-
-  if (sql_vector[pos] != "values") {
+  if (strcasecmp(sql_vector[pos].c_str(), "values")) {
     throw SyntaxErrorException();
   }
   pos++;
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
-  if (sql_vector[pos] != "(") {
+  if (strcasecmp(sql_vector[pos].c_str(), "(")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -318,7 +300,7 @@ void SQLInsert::Parse(std::vector<std::string> sql_vector) {
     cout << sql_value.data_type << " : " << value << endl;
     pos++;
     values_.push_back(sql_value);
-    if (sql_vector[pos] != ")") {
+    if (strcasecmp(sql_vector[pos].c_str(), ")")) {
       is_attr = true;
     }
     pos++;
@@ -327,39 +309,37 @@ void SQLInsert::Parse(std::vector<std::string> sql_vector) {
 
 int SQL::ParseDataType(std::vector<std::string> sql_vector, Attribute &attr,
                        unsigned int pos) {
-  std::transform(sql_vector[pos].begin(), sql_vector[pos].end(),
-                 sql_vector[pos].begin(), ::tolower);
   // std::algorithm::to_lower(sql_vector[pos]);
-  if (sql_vector[pos] == "int") {
+  if (!strcasecmp(sql_vector[pos].c_str(), "int")) {
     std::cout << "TYPE: "
               << "int" << std::endl;
     attr.set_data_type(T_INT);
     attr.set_length(4);
     pos++;
-    if (sql_vector[pos] == ",") {
+    if (!strcasecmp(sql_vector[pos].c_str(), ",")) {
       pos++;
     }
-  } else if (sql_vector[pos] == "float") {
+  } else if (!strcasecmp(sql_vector[pos].c_str(), "float")) {
     std::cout << "TYPE: "
               << "float" << std::endl;
     attr.set_data_type(T_FLOAT);
     attr.set_length(4);
     pos++;
-    if (sql_vector[pos] == ",") {
+    if (!strcasecmp(sql_vector[pos].c_str(), ",")) {
       pos++;
     }
-  } else if (sql_vector[pos] == "char") {
+  } else if (!strcasecmp(sql_vector[pos].c_str(), "char")) {
     attr.set_data_type(T_CHAR);
     pos++;
-    if (sql_vector[pos] == "(") {
+    if (!strcasecmp(sql_vector[pos].c_str(), "(")) {
       pos++;
     }
     attr.set_length(atoi(sql_vector[pos].c_str()));
     pos++;
-    if (sql_vector[pos] == ")") {
+    if (!strcasecmp(sql_vector[pos].c_str(), ")")) {
       pos++;
     }
-    if (sql_vector[pos] == ",") {
+    if (!strcasecmp(sql_vector[pos].c_str(), ",")) {
       pos++;
     }
   } else {
@@ -377,7 +357,7 @@ void SQLDelete::Parse(std::vector<std::string> sql_vector) {
     throw SyntaxErrorException();
   }
 
-  if (sql_vector[pos] != "from") {
+  if (strcasecmp(sql_vector[pos].c_str(), "from")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -390,7 +370,7 @@ void SQLDelete::Parse(std::vector<std::string> sql_vector) {
     return;
   }
 
-  if (sql_vector[pos] != "where") {
+  if (strcasecmp(sql_vector[pos].c_str(), "where")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -401,17 +381,17 @@ void SQLDelete::Parse(std::vector<std::string> sql_vector) {
     where.key = sql_vector[pos];
     pos++;
 
-    if (sql_vector[pos] == "=") {
+    if (!strcasecmp(sql_vector[pos].c_str(), "=")) {
       where.sign_type = SIGN_EQ;
-    } else if (sql_vector[pos] == "<") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<")) {
       where.sign_type = SIGN_LT;
-    } else if (sql_vector[pos] == ">") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), ">")) {
       where.sign_type = SIGN_GT;
-    } else if (sql_vector[pos] == "<=") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<=")) {
       where.sign_type = SIGN_LE;
-    } else if (sql_vector[pos] == ">=") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), ">=")) {
       where.sign_type = SIGN_GE;
-    } else if (sql_vector[pos] == "<>") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<>")) {
       where.sign_type = SIGN_NE;
     }
     pos++;
@@ -430,7 +410,7 @@ void SQLDelete::Parse(std::vector<std::string> sql_vector) {
       break;
     }
 
-    if (sql_vector[pos] != "and") {
+    if (strcasecmp(sql_vector[pos].c_str(), "and")) {
       throw SyntaxErrorException();
     }
     pos++;
@@ -453,7 +433,7 @@ void SQLUpdate::Parse(std::vector<std::string> sql_vector) {
     return;
   }
 
-  if (sql_vector[pos] != "set") {
+  if (strcasecmp(sql_vector[pos].c_str(), "set")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -464,7 +444,7 @@ void SQLUpdate::Parse(std::vector<std::string> sql_vector) {
     keyvalue.key = sql_vector[pos];
     pos++;
 
-    if (sql_vector[pos] != "=") {
+    if (strcasecmp(sql_vector[pos].c_str(), "=")) {
       throw SyntaxErrorException();
     }
     pos++;
@@ -478,16 +458,16 @@ void SQLUpdate::Parse(std::vector<std::string> sql_vector) {
     keyvalues_.push_back(keyvalue);
     cout << keyvalue.key << " " << keyvalue.value << endl;
 
-    if (sql_vector[pos] == ",") {
+    if (!strcasecmp(sql_vector[pos].c_str(), ",")) {
       pos++;
-    } else if (sql_vector[pos] == "where") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "where")) {
       break;
     } else {
       throw SyntaxErrorException();
     }
   }
 
-  if (sql_vector[pos] != "where") {
+  if (strcasecmp(sql_vector[pos].c_str(), "where")) {
     throw SyntaxErrorException();
   }
   pos++;
@@ -498,17 +478,17 @@ void SQLUpdate::Parse(std::vector<std::string> sql_vector) {
     where.key = sql_vector[pos];
     pos++;
 
-    if (sql_vector[pos] == "=") {
+    if (!strcasecmp(sql_vector[pos].c_str(), "=")) {
       where.sign_type = SIGN_EQ;
-    } else if (sql_vector[pos] == "<") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<")) {
       where.sign_type = SIGN_LT;
-    } else if (sql_vector[pos] == ">") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), ">")) {
       where.sign_type = SIGN_GT;
-    } else if (sql_vector[pos] == "<=") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<=")) {
       where.sign_type = SIGN_LE;
-    } else if (sql_vector[pos] == ">=") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), ">=")) {
       where.sign_type = SIGN_GE;
-    } else if (sql_vector[pos] == "<>") {
+    } else if (!strcasecmp(sql_vector[pos].c_str(), "<>")) {
       where.sign_type = SIGN_NE;
     }
     pos++;
@@ -527,7 +507,7 @@ void SQLUpdate::Parse(std::vector<std::string> sql_vector) {
       break;
     }
 
-    if (sql_vector[pos] != "and") {
+    if (strcasecmp(sql_vector[pos].c_str(), "and")) {
       throw SyntaxErrorException();
     }
     pos++;

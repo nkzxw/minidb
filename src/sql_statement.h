@@ -56,21 +56,7 @@ class TKey {
     }
   }
 
-  void ReadValue(std::string str) {
-    switch (key_type_) {
-      case 0: {
-        int a = std::atoi(str.c_str());
-        memcpy(key_, &a, length_);
-      } break;
-      case 1: {
-        float a = std::atof(str.c_str());
-        memcpy(key_, &a, length_);
-      } break;
-      case 2: {
-        memcpy(key_, str.c_str(), length_);
-      } break;
-    }
-  }
+  void ReadValue(std::string str) { ReadValue(str.c_str()); }
 
   int key_type() { return key_type_; }
   char *key() { return key_; };
@@ -125,18 +111,7 @@ class TKey {
     }
   }
 
-  bool operator!=(const TKey t1) {
-    switch (t1.key_type_) {
-      case 0:
-        return *(int *)key_ != *(int *)t1.key_;
-      case 1:
-        return *(float *)key_ != *(float *)t1.key_;
-      case 2:
-        return (strncmp(key_, t1.key_, length_) != 0);
-      default:
-        return false;
-    }
-  }
+  bool operator!=(const TKey t1) { return !(operator==(t1)); }
 };
 
 class SQL {

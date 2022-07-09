@@ -193,7 +193,7 @@ void RecordManager::Select(SQLSelect &st) {
   Table *tbl = cm_->GetDB(db_name_)->GetTable(st.tb_name());
 
   for (int i = 0; i < tbl->GetAttributeNum(); ++i) {
-    cout << setw(9) << left << tbl->ats()[i].attr_name();
+    cout << setw(12) << left << tbl->ats()[i].attr_name();
   }
   cout << endl;
 
