@@ -1,0 +1,56 @@
+
+去除
+// folder_path.imbue(std::locale("en_US.UTF-8"));
+// std::algorithm::to_lower(sql_vector_[1]);
+
+参考
+https://en.cppreference.com/w/cpp/filesystem/path/path
+
+########################################
+SHOW DATABASES;
+CREATE DATABASE abc;
+use abc;
+SHOW TABLES;
+CREATE TABLE aaa
+(
+col1 int
+);
+INSERT INTO aaa
+VALUES (111);
+SELECT * FROM aaa WHERE col1 = 111;			
+
+########################################
+
+CREATE DATABASE Abc;
+use Abc;
+CREATE TABLE aBc
+(
+col1 int,
+col2 int,
+col3 int,
+PRIMARY KEY (col1)
+);
+INSERT INTO aBc
+VALUES (111, 222.2, 'xyz');
+SELECT * FROM aBc WHERE col1 = 111;			
+
+插入了错误的字段类型
+
+########################################
+use Abc;
+
+CREATE TABLE aBC
+(
+col1 int,
+col2 float,
+col3 char(8),
+PRIMARY KEY (col1)
+);
+
+索引
+CREATE INDEX aBCcol1 ON aBC (col1);
+
+INSERT INTO aBC
+VALUES (111, 222.2, 'xyz');
+SELECT * FROM aBC WHERE col1 = 111;			
+
