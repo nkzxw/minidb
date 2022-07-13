@@ -31,13 +31,9 @@ void IndexManager::CreateIndex(SQLCreateIndex &st) {
   }
 
   Attribute *attr = tbl->GetAttribute(st.col_name());
-  if (attr->attr_type() != 1) {
+  if (!attr->attr_is_primary()) {
     throw IndexMustBeCreatedOnPKException();
   }
-
-  string file_name = cm_->path() + db_name_ + "/" + st.index_name() + ".index";
-  std::ofstream ofs(file_name.c_str(), std::ios::binary);
-  ofs.close();
 
   Index idx(st.index_name(), st.col_name(), attr->data_type(), attr->length(),
             (4 * 1024 - 12) / (4 + attr->length()) / 2 - 1);

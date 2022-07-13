@@ -13,21 +13,46 @@
 #include "exceptions.h"
 
 using namespace std;
+std::ostream &operator<<(std::ostream &out, const SQLWhere &where) {
+  switch (where.sign_type) {
+    case SIGN_EQ:
+      cout << "where: " << where.key << " = " << where.value << endl;
+      return out;
+    case SIGN_NE:
+      cout << "where: " << where.key << " != " << where.value << endl;
+      return out;
+    case SIGN_LT:
+      cout << "where: " << where.key << " < " << where.value << endl;
+      return out;
+    case SIGN_GT:
+      cout << "where: " << where.key << " > " << where.value << endl;
+      return out;
+    case SIGN_LE:
+      cout << "where: " << where.key << " <= " << where.value << endl;
+      return out;
+    case SIGN_GE:
+      cout << "where: " << where.key << " >= " << where.value << endl;
+      return out;
+    default:
+      return out;
+  }
+  return out;
+}
 
 std::ostream &operator<<(std::ostream &out, const TKey &object) {
   switch (object.key_type_) {
     case 0: {
       int a;
       memcpy(&a, object.key_, object.length_);
-      cout << setw(12) << left << a;
+      cout << setw(9) << left << a;
     } break;
     case 1: {
       float a;
       memcpy(&a, object.key_, object.length_);
-      cout << setw(12) << left << a;
+      cout << setw(9) << left << a;
     } break;
     case 2: {
-      cout << setw(12) << left << object.key_;
+      cout << setw(9) << left << object.key_;
     } break;
   }
 
@@ -93,7 +118,7 @@ void SQLSelect::Parse(std::vector<std::string> sql_vector) {
     }
 
     wheres_.push_back(where);
-    cout << where.key << " " << where.sign_type << " " << where.value << endl;
+    cout << where;
 
     if (sql_vector.size() == pos) {
       break;
@@ -205,7 +230,7 @@ void SQLCreateTable::Parse(std::vector<std::string> sql_vector) {
       pos++;
       for (unsigned int i = 0; i < attrs_.size(); ++i) {
         if (attrs_[i].attr_name() == sql_vector[pos]) {
-          attrs_[i].set_attr_type(1);
+          attrs_[i].set_attr_primary();
           std::cout << "PRIMARY KEY: " << sql_vector[pos] << std::endl;
         }
       }
@@ -404,7 +429,8 @@ void SQLDelete::Parse(std::vector<std::string> sql_vector) {
     }
 
     wheres_.push_back(where);
-    cout << where.key << " " << where.sign_type << " " << where.value << endl;
+    cout << "where: " << where.key << " " << where.sign_type << " "
+         << where.value << endl;
 
     if (sql_vector.size() == pos) {
       break;
@@ -501,7 +527,8 @@ void SQLUpdate::Parse(std::vector<std::string> sql_vector) {
     }
 
     wheres_.push_back(where);
-    cout << where.key << " " << where.sign_type << " " << where.value << endl;
+    cout << "where: " << where.key << " " << where.sign_type << " "
+         << where.value << endl;
 
     if (sql_vector.size() == pos) {
       break;

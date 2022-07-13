@@ -140,18 +140,23 @@ class Attribute {
   std::string attr_name_;
   int data_type_;
   int length_;
-  int attr_type_;
+  enum attrtype {
+    NORMAL,
+    PRIMARY,
+  };
+  attrtype attr_type_;
 
  public:
-  Attribute() : attr_name_(""), data_type_(-1), length_(-1), attr_type_(0) {}
+  Attribute()
+      : attr_name_(""), data_type_(-1), length_(-1), attr_type_(NORMAL) {}
   ~Attribute() {}
 
   std::string attr_name() { return attr_name_; }
 
   void set_attr_name(std::string name) { attr_name_ = name; }
 
-  int attr_type() { return attr_type_; }
-  void set_attr_type(int type) { attr_type_ = type; }
+  bool attr_is_primary() { return attr_type_ == PRIMARY; }
+  void set_attr_primary() { attr_type_ = PRIMARY; }
 
   int data_type() { return data_type_; }
   void set_data_type(int type) { data_type_ = type; }

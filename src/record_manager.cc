@@ -45,7 +45,7 @@ void RecordManager::Insert(SQLInsert &st) {
     tmp.ReadValue(value.c_str());
     tkey_values.push_back(tmp);
 
-    if (tbl->ats()[i].attr_type() == 1) {
+    if (tbl->ats()[i].attr_is_primary()) {
       pk_index = i;
     }
   }
@@ -193,7 +193,7 @@ void RecordManager::Select(SQLSelect &st) {
   Table *tbl = cm_->GetDB(db_name_)->GetTable(st.tb_name());
 
   for (int i = 0; i < tbl->GetAttributeNum(); ++i) {
-    cout << setw(12) << left << tbl->ats()[i].attr_name();
+    cout << setw(9) << left << tbl->ats()[i].attr_name();
   }
   cout << endl;
 
@@ -280,6 +280,7 @@ void RecordManager::Select(SQLSelect &st) {
     cout << endl;
   }
   if (tbl->GetIndexNum() != 0) {
+    std::cout << "Index 0:" << tbl->GetIndex(0)->name() << std::endl;
     BPlusTree tree(tbl->GetIndex(0), hdl_, cm_, db_name_);
     tree.Print();
   }
@@ -388,7 +389,7 @@ void RecordManager::Update(SQLUpdate &st) {
   int affect_index = -1;
 
   for (int i = 0; i < tbl->ats().size(); ++i) {
-    if (tbl->ats()[i].attr_type() == 1) {
+    if (tbl->ats()[i].attr_is_primary()) {
       pk_index = i;
     }
   }

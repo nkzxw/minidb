@@ -183,6 +183,10 @@ void MiniDBAPI::ShowTables() {
   for (int i = 0; i < db->tbs().size(); ++i) {
     Table tb = db->tbs()[i];
     std::cout << "\t" << tb.tb_name() << std::endl;
+
+    for (int i = 0; i < tb.GetIndexNum(); ++i) {
+      std::cout << "  Index:" << tb.GetIndex(i)->name() << std::endl;
+    }
   }
 }
 

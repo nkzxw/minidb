@@ -6,6 +6,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+#include <NanoLog.hpp>
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -29,6 +30,8 @@ int main(int argc, const char *argv[]) {
   size_t found;
 
   using_history();
+  nanolog::initialize(nanolog::GuaranteedLogger(), "./", "nanolog", 1);
+  // LOG_INFO << "Sample NanoLog";
 
   while (true) {
     line = readline("MiniDB> ");
