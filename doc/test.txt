@@ -1,5 +1,4 @@
-
-去除
+代码去除
 // folder_path.imbue(std::locale("en_US.UTF-8"));
 // std::algorithm::to_lower(sql_vector_[1]);
 

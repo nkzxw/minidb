@@ -1,0 +1,31 @@
+########################################
+索引原理:
+1、4k包含多个树节点，4k持久化到index文件+block_num_ ；
+2、中间节点存key（也就是主键）+ block_num_ ；可n分查找
+3、叶子节点存放key + block_num_ + 偏移。
+4、查找时，
+tree.GetVal(dest_key);
+
+RecordManager::Insert(){
+    tree.Add(tkey_values[i], blocknum, offset);
+}
+int blocknum = tree.GetVal(dest_key);
+
+///
+
+void BPlusTreeNode::GetBuffer() {
+  BlockInfo *block = tree_->hdl()->GetFileBlock(
+      tree_->db_name(), tree_->idx()->name(), FORMAT_INDEX, block_num_);
+  buffer_ = block->data();
+  block->set_dirty(true);
+}
+
+void BPlusTreeNode::SetKeys(int index, TKey key) {
+  int base = 12;
+  int lenr = 4 + tree_->idx()->key_len();
+  memcpy(&buffer_[base + index * lenr + 4], key.key(), tree_->idx()->key_len());
+}
+
+int BPlusTreeNode::Add(TKey &key) {
+    SetKeys(0, key);
+}

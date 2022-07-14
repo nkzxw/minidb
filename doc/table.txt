@@ -1,0 +1,13 @@
+
+########################################
+存储原理:
+1、存储方式：块连续存储。记录都是固定长度，块内记录连续存放。
+简化模型即为：块链表，块内数组。blocknum+offset
+
+2、插入申请块顺序：a、未填满的块；b、被删除的块；c、新快
+void RecordManager::Insert(SQLInsert &st)
+
+3、新申请的块作为first块使用，next到老的块。新申请的块对应文件位置是增加的。
+
+4、查找：a、没有索引的，全表的page扫描，b、有索引找索引，查到后读取某些page。
+void RecordManager::Select(SQLSelect &st)
